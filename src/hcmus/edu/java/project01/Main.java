@@ -22,7 +22,7 @@ public class Main {
             myDict.showMenu();
             op = myDict.getTask();
             myDict.doTask(op);
-            System.out.print("Press enter key to continue.");
+            System.out.print("Press enter key to continue or finish this function.");
             input.nextLine();
         }
         while (op != OPTIONS.length);
