@@ -1,5 +1,6 @@
 package hcmus.edu.java.project01;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -17,8 +18,19 @@ public class SlangDictionary {
         this.input = new Scanner(System.in);
     }
 
-    public LinkedList<String> getDefinition(String slang) {
+    public LinkedList<String> getDefinitionsOf(String slang) {
         return this.dict.get(slang);
+    }
+
+    public LinkedList<String> getSlangsOf(String kword) {
+        LinkedList<String> slang_list = new LinkedList<>();
+        for(Map.Entry<String, LinkedList<String>> entry : this.dict.entrySet()) {
+            for (String definition : entry.getValue()) {
+                if (Arrays.asList(definition.split(" ")).contains(kword))
+                    slang_list.push(entry.getKey());
+            }
+        }
+        return slang_list;
     }
 
     public void addWord(String word, String mean) {
@@ -93,8 +105,13 @@ public class SlangDictionary {
         if (taskNum == 1) {
             System.out.print("Enter slang to find definition: ");
             String slang = this.input.nextLine();
-            LinkedList<String> def = this.getDefinition(slang);
+            LinkedList<String> def = this.getDefinitionsOf(slang);
             System.out.println("Definition of " + slang + " is: " + def.toString());
+        } else if (taskNum == 2) {
+            System.out.print("Enter key words in definition to find slang words: ");
+            String kword = this.input.nextLine();
+            LinkedList<String> slangs = this.getSlangsOf(kword);
+            System.out.println("Slang that definition contains " + kword + " is: " + slangs.toString());
         } else if (taskNum == this.ntask) {
             System.out.println("See you later.");
         } else {
@@ -103,7 +120,7 @@ public class SlangDictionary {
         }
     }
 
-    public void showAllSalng() {
+    public void showAllSlang() {
         System.out.println(this.toString());
     }
 

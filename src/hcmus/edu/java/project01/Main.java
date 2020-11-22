@@ -9,8 +9,8 @@ public class Main {
     public static final String PATH = "./dict/slang.txt";
     public static final String[] OPTIONS = {"Search definition", "Search slang", "History", "Add new slang",
                                             "Edit slang", "Remove slang", "Reset to origin dictionary",
-                                            "On this day slang", "Quiz: Find right definition", "Quiz find right slang",
-                                            "Exit"};
+                                            "On this day slang", "Quiz: Find right definition",
+                                            "Quiz: find right slang", "Exit"};
     public static Scanner input = new Scanner(System.in);
 
     public static void main(String[] args) {
