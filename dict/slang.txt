@@ -2874,7 +2874,7 @@ HOOAH`HUA
 HOOCHIE`Over made up woman with trashy dress sense
 HOOCHIFIED`Dressed Provocatively
 HOOD`Neighborhood| ghetto
-HOODIE`Hooded sweatshirt| Person wearing a hooded sweatshirt
+HOODIE`Hooded sweatshir| Person wearing a hooded sweatshirt
 HOOK ME UP`Share with me
 HOOKED`Addicted
 HOOPS`Basketabll
