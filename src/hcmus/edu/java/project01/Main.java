@@ -1,6 +1,8 @@
 package hcmus.edu.java.project01;
 
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -26,6 +28,24 @@ public class Main {
             input.nextLine();
         }
         while (op != OPTIONS.length);
-        //myDict.exportFile(PATH, WM_PARAMETER, MM_PARAMETER);
+        System.out.println("Do you want to overwrite origin file with current dictionary? (YES, Y or NO, N)");
+        System.out.print("Your will (uppercase or lowercase accepted): ");
+        String[] init = {"YES", "Y", "NO", "N"};
+        List<String> acceptedList = Arrays.asList(init);
+        String confirm;
+        do {
+            confirm = input.nextLine().toUpperCase();
+            if (!acceptedList.contains(confirm)) {
+                System.out.print("Invalid input. Please try again with " + acceptedList.toString() + ": ");
+            }
+        } while (!acceptedList.contains(confirm));
+        if (confirm.equals("YES") || confirm.equals("Y")){
+            System.out.print("Your answer is YES. ACCEPTED. Doing last task ...");
+            myDict.exportFile(PATH, WM_PARAMETER, MM_PARAMETER);
+        }
+        else {
+            System.out.print("Your answer is NO. ACCEPTED.");
+        }
+        System.out.println("All task done. See you later!!!");
     }
 }

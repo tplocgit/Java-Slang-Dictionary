@@ -197,11 +197,13 @@ public class SlangDictionary {
                     }
                 } while (!acceptedAns.contains(confirm));
                 if (confirm.equals("OVERWRITE") || confirm.equals("OW")) {
+                    System.out.println("Your answer is OVERWRITE. Doing task ...");
                     LinkedList<String> new_def = new LinkedList<>();
                     new_def.add(def);
                     this.dict.put(slang, new_def);
                 }
                 else {
+                    System.out.println("Your answer is ADDNEW. Doing task ...");
                     this.addWord(slang, def);
                 }
             }
@@ -264,6 +266,7 @@ public class SlangDictionary {
                     if (it.hasNext())
                         builder.append(mean_mean_parameter);
                 }
+                builder.append("\n");
             }
             fw.write(builder.toString());
         } catch (IOException e) {
