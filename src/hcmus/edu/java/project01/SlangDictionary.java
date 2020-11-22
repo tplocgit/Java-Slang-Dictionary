@@ -2,6 +2,8 @@ package hcmus.edu.java.project01;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class SlangDictionary {
@@ -10,6 +12,9 @@ public class SlangDictionary {
     private StringBuilder menu;
     private final Scanner input;
     private Stack<String> log;
+    public static String UNKNOWN_WORD_MESG = "Unknown slang word";
+    public static String UNKNOWN_TASK_MESG = "Unknown task";
+    public static String UNKNOWN_DEFI_MESG = "Unknown key word";
 
     SlangDictionary() {
         this.dict = new TreeMap<>();
@@ -24,7 +29,7 @@ public class SlangDictionary {
 
     public String strOfTask(int taskNum) {
         if (taskNum <= 0 || taskNum > this.taskList.length)
-            return "Unknown task";
+            return SlangDictionary.UNKNOWN_TASK_MESG;
         return this.taskList[taskNum - 1];
     }
 
@@ -32,7 +37,7 @@ public class SlangDictionary {
         LinkedList<String> def = this.dict.get(slang);
         if (def == null) {
             def = new LinkedList<>();
-            def.add("Unknown word");
+            def.add(SlangDictionary.UNKNOWN_WORD_MESG);
         }
         return def;
     }
@@ -46,7 +51,7 @@ public class SlangDictionary {
             }
         }
         if (slang_list.size() <= 0)
-            slang_list.add("Unknown key word");
+            slang_list.add(SlangDictionary.UNKNOWN_DEFI_MESG);
         return slang_list;
     }
 
@@ -86,7 +91,7 @@ public class SlangDictionary {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Word: Means\n");
+        builder.append("Word: Definitions\n");
 
         for (Map.Entry<String, LinkedList<String>> entry : this.dict.entrySet()) {
             builder.append(entry.getKey()).append(": ");
@@ -168,6 +173,38 @@ public class SlangDictionary {
             this.pushToLog(builder);
         } else if (taskNum == 3) {
             this.showHistory();
+        } else if (taskNum == 4) {
+            System.out.print("Enter new slang word: ");
+            String slang = this.input.nextLine();
+            System.out.print("Enter definition: ");
+            String def = this.input.nextLine();
+            LinkedList<String> search_defs = this.getDefinitionsOf(slang);
+            if (search_defs.contains(SlangDictionary.UNKNOWN_WORD_MESG)) {
+                this.addWord(slang, def);
+            }
+            else {
+                System.out.print("Your slang word already has been defined in dictionary. Please confirm by enter:\n");
+                String[] init = {"OVERWRITE", "OW", "ADDNEW", "NEW"};
+                List<String> acceptedAns = Arrays.asList(init);
+                System.out.println("1. 'OVERWRITE' (or 'OW') to overwrite");
+                System.out.println("2. 'ADDNEW' (or 'NEW') to add new definition");
+                System.out.println("Enter your will (lowercase or uppercase are accepted): ");
+                String confirm;
+                do {
+                    confirm = this.input.nextLine().toUpperCase();
+                    if (!acceptedAns.contains(confirm)) {
+                        System.out.print("Invalid input. Please try again with " + acceptedAns.toString() + ": ");
+                    }
+                } while (!acceptedAns.contains(confirm));
+                if (confirm.equals("OVERWRITE") || confirm.equals("OW")) {
+                    LinkedList<String> new_def = new LinkedList<>();
+                    new_def.add(def);
+                    this.dict.put(slang, new_def);
+                }
+                else {
+                    this.addWord(slang, def);
+                }
+            }
         } else if (taskNum == this.taskList.length) {
             System.out.println("See you later.");
             builder.append(taskNum);
@@ -210,6 +247,35 @@ public class SlangDictionary {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+        }
+    }
+
+    public void exportFile(String path, String word_mean_parameter, String mean_mean_parameter) {
+        File fout = new File(path);
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(fout);
+            StringBuilder builder = new StringBuilder();
+            for (Map.Entry<String, LinkedList<String>> entry : this.dict.entrySet()) {
+                builder.append(entry.getKey()).append(word_mean_parameter);
+                Iterator<String> it = entry.getValue().iterator();
+                while (it.hasNext()) {
+                    builder.append(it.next());
+                    if (it.hasNext())
+                        builder.append(mean_mean_parameter);
+                }
+            }
+            fw.write(builder.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            //close resources
+            try {
+                if (fw != null)
+                    fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

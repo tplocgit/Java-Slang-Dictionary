@@ -26,5 +26,6 @@ public class Main {
             input.nextLine();
         }
         while (op != OPTIONS.length);
+        //myDict.exportFile(PATH, WM_PARAMETER, MM_PARAMETER);
     }
 }
