@@ -16,6 +16,10 @@ public class SlangDictionary {
     public static String UNKNOWN_WORD_MESG = "Unknown slang word";
     public static String UNKNOWN_TASK_MESG = "Unknown task";
     public static String UNKNOWN_DEFI_MESG = "Unknown key word";
+    public static int EDIT_TASKNUM = 5;
+    public static int ADD_TASKNUM = 4;
+    public static int RM_TASKNUM = 6;
+
 
     SlangDictionary() {
         this.dict = new TreeMap<>();
@@ -61,7 +65,7 @@ public class SlangDictionary {
         return slang_list;
     }
 
-    public String getHistory() {
+    public String getSearchHistory() {
         StringBuilder builder = new StringBuilder();
         builder.append("History from present to past:\n");
         int act_counter = 0;
@@ -78,8 +82,12 @@ public class SlangDictionary {
         return builder.toString();
     }
 
-    public void showHistory() {
-        System.out.println(this.getHistory());
+    public void showSearchHistory() {
+        System.out.println(this.getSearchHistory());
+    }
+
+    public boolean hasDefinitionsOf (String slang) {
+        return !this.getDefinitionsOf(slang).contains(SlangDictionary.UNKNOWN_WORD_MESG);
     }
 
     public void addWord(String word, String mean) {
@@ -182,7 +190,7 @@ public class SlangDictionary {
             builder.append(taskNum).append("`").append(keyword).append("`").append(slang.toString());
             this.pushToSearchLog(builder);
         } else if (taskNum == 3) {
-            this.showHistory();
+            this.showSearchHistory();
         } else if (taskNum == 4) {
             System.out.print("Enter new slang word: ");
             String slang = this.input.nextLine();
@@ -236,6 +244,7 @@ public class SlangDictionary {
                     System.out.print("Enter definition: ");
                     String def = this.input.nextLine();
                     addWord(slang, def);
+                    builder.append(SlangDictionary.ADD_TASKNUM).append("`").append(slang).append("`").append(def);
                 } else {
                     System.out.print("Your answer is NO. ACCEPTED.");
                 }
@@ -258,6 +267,35 @@ public class SlangDictionary {
                     new_defis.add(inputLine);
                 }
                 this.putWord(slang, new_defis);
+                builder.append(taskNum).append("`").append(slang).append("`").append(defis).append("`").append(new_defis);
+            }
+        } else if (taskNum == 6) {
+            System.out.print("Enter slang to remove: ");
+            String slang = this.input.nextLine();
+            boolean check = this.hasDefinitionsOf(slang);
+            if (check) {
+                LinkedList<String> defis = this.getDefinitionsOf(slang);
+                System.out.println("The definitions of " + slang + " is " + defis.toString());
+                System.out.println("Are you sure to remove it? (YES, Y or NO, N)");
+                String[] init = {"YES", "Y", "NO", "N"};
+                List<String> acceptedList = Arrays.asList(init);
+                String confirm;
+                do {
+                    confirm = input.nextLine().toUpperCase();
+                    if (!acceptedList.contains(confirm)) {
+                        System.out.print("Invalid input. Please try again with " + acceptedList.toString() + ": ");
+                    }
+                } while (!acceptedList.contains(confirm));
+                if (confirm.equals("YES") || confirm.equals("Y")) {
+                    System.out.println("Your answer is YES. ACCEPTED. Doing last task ...");
+                    this.removeWord(slang);
+                    builder.append(taskNum).append("`").append(slang).append("`").append(defis);
+                } else {
+                    System.out.print("Your answer is NO. ACCEPTED.");
+                }
+            }
+            else {
+                System.out.println("Your entered slang hasn't been defined yed.");
             }
         } else if (taskNum == this.taskList.length) {
             builder.append(taskNum);
