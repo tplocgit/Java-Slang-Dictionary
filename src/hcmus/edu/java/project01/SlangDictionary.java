@@ -11,7 +11,8 @@ public class SlangDictionary {
     private String[] taskList;
     private StringBuilder menu;
     private final Scanner input;
-    private Stack<String> log;
+    private Stack<String> searchLog;
+    private Stack<String> changeLog;
     public static String UNKNOWN_WORD_MESG = "Unknown slang word";
     public static String UNKNOWN_TASK_MESG = "Unknown task";
     public static String UNKNOWN_DEFI_MESG = "Unknown key word";
@@ -20,11 +21,16 @@ public class SlangDictionary {
         this.dict = new TreeMap<>();
         this.menu = new StringBuilder();
         this.input = new Scanner(System.in);
-        this.log = new Stack<>();
+        this.searchLog = new Stack<>();
+        this.changeLog = new Stack<>();
     }
 
-    private void pushToLog(StringBuilder builder) {
-        this.log.push(builder.toString());
+    private void pushToSearchLog(StringBuilder builder) {
+        this.searchLog.push(builder.toString());
+    }
+
+    private void pushToChangeLog(StringBuilder builder) {
+        this.changeLog.push(builder.toString());
     }
 
     public String strOfTask(int taskNum) {
@@ -44,7 +50,7 @@ public class SlangDictionary {
 
     public LinkedList<String> getSlangWordsOf(String keyword) {
         LinkedList<String> slang_list = new LinkedList<>();
-        for(Map.Entry<String, LinkedList<String>> entry : this.dict.entrySet()) {
+        for (Map.Entry<String, LinkedList<String>> entry : this.dict.entrySet()) {
             for (String definition : entry.getValue()) {
                 if (Arrays.asList(definition.toLowerCase().split(" ")).contains(keyword.toLowerCase()))
                     slang_list.push(entry.getKey());
@@ -59,7 +65,7 @@ public class SlangDictionary {
         StringBuilder builder = new StringBuilder();
         builder.append("History from present to past:\n");
         int act_counter = 0;
-        for(String activity : this.log) {
+        for (String activity : this.searchLog) {
             ++act_counter;
             String[] tokens = activity.split("`");
             int task = Integer.parseInt(tokens[0]);
@@ -86,6 +92,10 @@ public class SlangDictionary {
             means_list.add(mean);
             this.dict.put(word, means_list);
         }
+    }
+
+    public void putWord(String slang, LinkedList<String> defis) {
+        this.dict.put(slang, defis);
     }
 
     @Override
@@ -127,19 +137,19 @@ public class SlangDictionary {
     }
 
     private static boolean isInteger(String s, int radix) {
-        if(s.isEmpty()) return false;
-        for(int i = 0; i < s.length(); i++) {
-            if(i == 0 && s.charAt(i) == '-') {
-                if(s.length() == 1) return false;
+        if (s.isEmpty()) return false;
+        for (int i = 0; i < s.length(); i++) {
+            if (i == 0 && s.charAt(i) == '-') {
+                if (s.length() == 1) return false;
                 else continue;
             }
-            if(Character.digit(s.charAt(i),radix) < 0) return false;
+            if (Character.digit(s.charAt(i), radix) < 0) return false;
         }
         return true;
     }
 
     private boolean isInteger(String s) {
-        return isInteger(s,10);
+        return isInteger(s, 10);
     }
 
     public int getTask() {
@@ -163,14 +173,14 @@ public class SlangDictionary {
             LinkedList<String> def = this.getDefinitionsOf(slang);
             System.out.println("Definition of " + slang + " is: " + def.toString());
             builder.append(taskNum).append("`").append(slang).append("`").append(def.toString());
-            this.pushToLog(builder);
+            this.pushToSearchLog(builder);
         } else if (taskNum == 2) {
             System.out.print("Enter key words in definition to find slang words: ");
             String keyword = this.input.nextLine();
             LinkedList<String> slang = this.getSlangWordsOf(keyword);
             System.out.println("Slang that definition contains " + keyword + " is: " + slang.toString());
             builder.append(taskNum).append("`").append(keyword).append("`").append(slang.toString());
-            this.pushToLog(builder);
+            this.pushToSearchLog(builder);
         } else if (taskNum == 3) {
             this.showHistory();
         } else if (taskNum == 4) {
@@ -181,8 +191,7 @@ public class SlangDictionary {
             LinkedList<String> search_defs = this.getDefinitionsOf(slang);
             if (search_defs.contains(SlangDictionary.UNKNOWN_WORD_MESG)) {
                 this.addWord(slang, def);
-            }
-            else {
+            } else {
                 System.out.print("Your slang word already has been defined in dictionary. Please confirm by enter:\n");
                 String[] init = {"OVERWRITE", "OW", "ADDNEW", "NEW"};
                 List<String> acceptedAns = Arrays.asList(init);
@@ -201,16 +210,58 @@ public class SlangDictionary {
                     LinkedList<String> new_def = new LinkedList<>();
                     new_def.add(def);
                     this.dict.put(slang, new_def);
-                }
-                else {
+                } else {
                     System.out.println("Your answer is ADDNEW. Doing task ...");
                     this.addWord(slang, def);
                 }
             }
+        } else if (taskNum == 5) {
+            System.out.print("Enter slang word to get definitions: ");
+            String slang = this.input.nextLine();
+            LinkedList<String> defis = this.getDefinitionsOf(slang);
+            if (defis.contains(SlangDictionary.UNKNOWN_WORD_MESG)) {
+                System.out.println("Your entered word hasn't been defined yet. Wanna add new? (YES, Y/NO, N)");
+                System.out.println("Your will (both lowercase or uppercase accepted): ");
+                String[] init = {"YES", "Y", "NO", "N"};
+                List<String> acceptedList = Arrays.asList(init);
+                String confirm;
+                do {
+                    confirm = input.nextLine().toUpperCase();
+                    if (!acceptedList.contains(confirm)) {
+                        System.out.print("Invalid input. Please try again with " + acceptedList.toString() + ": ");
+                    }
+                } while (!acceptedList.contains(confirm));
+                if (confirm.equals("YES") || confirm.equals("Y")) {
+                    System.out.println("Your answer is YES. ACCEPTED. Doing last task ...");
+                    System.out.print("Enter definition: ");
+                    String def = this.input.nextLine();
+                    addWord(slang, def);
+                } else {
+                    System.out.print("Your answer is NO. ACCEPTED.");
+                }
+            }
+            else {
+                System.out.println("Current definitions: " + defis.toString());
+                System.out.print("Enter number of definition of you will enter: ");
+                String num;
+                do {
+                    num = input.nextLine();
+                    if (!isInteger(num))
+                        System.out.print("Please enter valid integer. Try again: ");
+                } while (!isInteger(num));
+
+                int ex_num = Integer.parseInt(num);
+                System.out.println("Enter your new definitions (each definition in one line): ");
+                LinkedList<String> new_defis = new LinkedList<>();
+                for (int i = 0; i < ex_num; ++i) {
+                    String inputLine = this.input.nextLine();
+                    new_defis.add(inputLine);
+                }
+                this.putWord(slang, new_defis);
+            }
         } else if (taskNum == this.taskList.length) {
-            System.out.println("See you later.");
             builder.append(taskNum);
-            this.pushToLog(builder);
+            this.pushToChangeLog(builder);
         } else {
             System.out.println("This function hasn't been implemented yet. " +
                     " Please try another function on our current menu.");
@@ -240,7 +291,7 @@ public class SlangDictionary {
                 String means = tokens.nextToken();
                 //System.out.println(data);
                 tokens = new StringTokenizer(means, mean_mean_parameter);
-                while(tokens.hasMoreTokens()) {
+                while (tokens.hasMoreTokens()) {
                     String mean = tokens.nextToken().trim();
                     this.addWord(word, mean);
                 }
