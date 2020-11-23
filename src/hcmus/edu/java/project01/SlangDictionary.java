@@ -94,12 +94,10 @@ public class SlangDictionary {
             builder.append("Task #").append(act_counter).append(" ").append(str_task);
             if (task == SlangDictionary.ADD_TASKNUM) {
                 builder.append(": Add \"").append(tokens[1]).append("\", with definition \"").append(tokens[2]).append("\"\n");
-            }
-            else if (task == SlangDictionary.EDIT_TASKNUM){
+            } else if (task == SlangDictionary.EDIT_TASKNUM) {
                 builder.append(": Edit definitions of \"").append(tokens[1]).append("\", from \"").append(tokens[2]).append("\" to \"");
                 builder.append(tokens[3]).append("\"\n");
-            }
-            else {
+            } else {
                 builder.append(": remove \"").append(tokens[1]).append("\"\n");
             }
         }
@@ -114,7 +112,7 @@ public class SlangDictionary {
         System.out.println(this.getChangeHistory());
     }
 
-    public boolean hasDefinitionsOf (String slang) {
+    public boolean hasDefinitionsOf(String slang) {
         return !this.getDefinitionsOf(slang).contains(SlangDictionary.UNKNOWN_WORD_MESG);
     }
 
@@ -298,8 +296,7 @@ public class SlangDictionary {
                 } else {
                     System.out.print("Your answer is NO. ACCEPTED.");
                 }
-            }
-            else {
+            } else {
                 System.out.println("Current definitions: " + defis.toString());
                 System.out.print("Enter number of definition of you will enter: ");
                 String num;
@@ -346,8 +343,7 @@ public class SlangDictionary {
                 } else {
                     System.out.print("Your answer is NO. ACCEPTED.");
                 }
-            }
-            else {
+            } else {
                 System.out.println("Your entered slang hasn't been defined yed.");
             }
         } else if (taskNum == 7) {
@@ -371,8 +367,7 @@ public class SlangDictionary {
                     String slang = tokens.nextToken();
                     if (task == SlangDictionary.ADD_TASKNUM) {
                         this.removeWord(slang);
-                    }
-                    else {
+                    } else {
                         String str_defis = tokens.nextToken();
                         LinkedList<String> defis = SlangDictionary.stringToLinkedList(str_defis);
                         this.putWord(slang, defis);
@@ -384,7 +379,35 @@ public class SlangDictionary {
         } else if (taskNum == 8) {
             String randKey = this.randomKey();
             System.out.println("One of " + this.strOfTask(8) + " is " + randKey +
-                                                                        ": " + this.getDefinitionsOf(randKey));
+                    ": " + this.getDefinitionsOf(randKey));
+        } else if (taskNum == 9) {
+            List<String> randKeys = new ArrayList<>();
+            TreeMap<String, Boolean> quizMap = new TreeMap<>();
+            for (int i = 0; i < 4; ++i) {
+                randKeys.add(this.randomKey());
+                quizMap.put(this.getDefinitionsOf(randKeys.get(i)).toString(), false);
+            }
+            String rightAns = this.getDefinitionsOf(randKeys.get(0)).toString();
+            quizMap.put(rightAns, true);
+            System.out.println("Today quiz: What is definitions of " + randKeys.get(0) + ":");
+            Collections.shuffle(randKeys);
+            System.out.println("1. " + getDefinitionsOf(randKeys.get(0)));
+            System.out.println("2. " + getDefinitionsOf(randKeys.get(1)));
+            System.out.println("3. " + getDefinitionsOf(randKeys.get(2)));
+            System.out.println("4. " + getDefinitionsOf(randKeys.get(3)));
+            System.out.print("Your answer (1-4): ");
+            String op;
+            boolean check;
+            do {
+                op = input.nextLine();
+                check = !this.isInteger(op) || Integer.parseInt(op) < 1 || Integer.parseInt(op) > 4;
+                if (check)
+                    System.out.print("Please enter valid integer. Try again: ");
+            } while (check);
+            int ans = Integer.parseInt(op);
+            Boolean checkAns = quizMap.get(this.getDefinitionsOf(randKeys.get(ans - 1)).toString());
+            System.out.println("Your ans is " + (checkAns ? "right" : "wrong") + ". The right answer is " + rightAns);
+
         } else if (taskNum == this.taskList.length) {
             builder.append(taskNum);
             this.pushToChangeLog(builder);
