@@ -24,7 +24,7 @@ public class Main {
             myDict.showMenu();
             op = myDict.getTask();
             myDict.doTask(op);
-            System.out.print("Press enter key to continue or finish this function.");
+            System.out.print("Press enter key to continue or finish this function.\n");
             input.nextLine();
         }
         while (op != OPTIONS.length);
@@ -44,7 +44,7 @@ public class Main {
             myDict.exportFile(PATH, WM_PARAMETER, MM_PARAMETER);
         }
         else {
-            System.out.print("Your answer is NO. ACCEPTED.");
+            System.out.println("Your answer is NO. ACCEPTED.");
         }
         System.out.println("All task done. See you later!!!");
     }

@@ -134,6 +134,13 @@ public class SlangDictionary {
         this.dict.put(slang, defis);
     }
 
+    public String randomKey() {
+        Set<String> k_set = this.dict.keySet();
+        List<String> k_list = new ArrayList<>(k_set);
+        int randInt = new Random().nextInt(k_list.size());
+        return k_list.get(randInt);
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -374,6 +381,10 @@ public class SlangDictionary {
             } else {
                 System.out.print("Your answer is NO. ACCEPTED.");
             }
+        } else if (taskNum == 8) {
+            String randKey = this.randomKey();
+            System.out.println("One of " + this.strOfTask(8) + " is " + randKey +
+                                                                        ": " + this.getDefinitionsOf(randKey));
         } else if (taskNum == this.taskList.length) {
             builder.append(taskNum);
             this.pushToChangeLog(builder);
