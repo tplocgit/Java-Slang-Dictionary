@@ -8,7 +8,8 @@ import java.util.Scanner;
 public class Main {
     public static final String WM_PARAMETER = "`";
     public static final String MM_PARAMETER = "|";
-    public static final String PATH = "./dict/slang.txt";
+    public static final String DICT_PATH = "./dict/slang.txt";
+    public static final String LOG_PATH = "./log/log.txt";
     public static final String[] OPTIONS = {"Search definition", "Search slang", "History", "Add new slang",
                                             "Edit slang", "Remove slang", "Reset to origin dictionary",
                                             "On this day slang", "Quiz: Find right definition",
@@ -17,7 +18,7 @@ public class Main {
 
     public static void main(String[] args) {
         SlangDictionary myDict = new SlangDictionary();
-        myDict.fromFile(PATH, WM_PARAMETER, MM_PARAMETER);
+        myDict.fromFile(DICT_PATH, LOG_PATH, WM_PARAMETER, MM_PARAMETER);
         myDict.setMenu(OPTIONS);
         int op;
         do {
@@ -41,7 +42,7 @@ public class Main {
         } while (!acceptedList.contains(confirm));
         if (confirm.equals("YES") || confirm.equals("Y")){
             System.out.print("Your answer is YES. ACCEPTED. Doing last task ...");
-            myDict.exportFile(PATH, WM_PARAMETER, MM_PARAMETER);
+            myDict.exportFile(DICT_PATH, LOG_PATH, WM_PARAMETER, MM_PARAMETER);
         }
         else {
             System.out.println("Your answer is NO. ACCEPTED.");

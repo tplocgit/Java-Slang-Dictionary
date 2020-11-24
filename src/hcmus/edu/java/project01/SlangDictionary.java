@@ -373,6 +373,7 @@ public class SlangDictionary {
                         this.putWord(slang, defis);
                     }
                 }
+                this.changeLog.clear();
             } else {
                 System.out.print("Your answer is NO. ACCEPTED.");
             }
@@ -408,9 +409,38 @@ public class SlangDictionary {
             Boolean checkAns = quizMap.get(this.getDefinitionsOf(randKeys.get(ans - 1)).toString());
             System.out.println("Your ans is " + (checkAns ? "right" : "wrong") + ". The right answer is " + rightAns);
 
+        } else if (taskNum == 10) {
+            List<String> randKeys = new ArrayList<>();
+            TreeMap<String, Boolean> quizMap = new TreeMap<>();
+            for (int i = 0; i < 4; ++i) {
+                randKeys.add(this.randomKey());
+                quizMap.put(randKeys.get(i), false);
+            }
+            String rightAns = randKeys.get(0);
+            quizMap.put(rightAns, true);
+            System.out.println("Today quiz: What is slang of " + this.getDefinitionsOf(randKeys.get(0)) + ":");
+
+            Collections.shuffle(randKeys);
+
+            System.out.println("1. " + randKeys.get(0));
+            System.out.println("2. " + randKeys.get(1));
+            System.out.println("3. " + randKeys.get(2));
+            System.out.println("4. " + randKeys.get(3));
+            System.out.print("Your answer (1-4): ");
+            String op;
+            boolean check;
+            do {
+                op = input.nextLine();
+                check = !this.isInteger(op) || Integer.parseInt(op) < 1 || Integer.parseInt(op) > 4;
+                if (check)
+                    System.out.print("Please enter valid integer. Try again: ");
+            } while (check);
+            int ans = Integer.parseInt(op);
+            Boolean checkAns = quizMap.get(randKeys.get(ans - 1));
+            System.out.println("Your ans is " + (checkAns ? "right" : "wrong") + ". The right answer is " + rightAns);
+
         } else if (taskNum == this.taskList.length) {
             builder.append(taskNum);
-            this.pushToChangeLog(builder);
         } else if (taskNum == 404) {
             this.showChangeHistory();
         } else {
@@ -427,10 +457,29 @@ public class SlangDictionary {
         return this.dict.remove(word);
     }
 
-    public void fromFile(String path, String word_mean_parameter, String mean_mean_parameter) {
+    private void loadChangeLog(String path) {
         try {
             File fin = new File(path);
             Scanner myReader = new Scanner(fin);
+
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                if(!data.isEmpty())
+                    this.changeLog.push(data);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    public void fromFile(String filePath, String logPath,String word_mean_parameter, String mean_mean_parameter) {
+        try {
+            File fin = new File(filePath);
+            Scanner myReader = new Scanner(fin);
+
+            this.loadChangeLog(logPath);
 
             if (myReader.hasNextLine())
                 myReader.nextLine();
@@ -454,12 +503,37 @@ public class SlangDictionary {
         }
     }
 
-    public void exportFile(String path, String word_mean_parameter, String mean_mean_parameter) {
+    private void saveChangeLog(String path) {
         File fout = new File(path);
         FileWriter fw = null;
         try {
             fw = new FileWriter(fout);
             StringBuilder builder = new StringBuilder();
+            for (String data : this.changeLog) {
+                builder.append(data).append("\n");
+            }
+            fw.write(builder.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            //close resources
+            try {
+                if (fw != null)
+                    fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void exportFile(String filePath, String logPath, String word_mean_parameter, String mean_mean_parameter) {
+        File fout = new File(filePath);
+        FileWriter fw = null;
+        try {
+            this.saveChangeLog(logPath);
+            fw = new FileWriter(fout);
+            StringBuilder builder = new StringBuilder();
+            builder.append("Slag`Meaning");
             for (Map.Entry<String, LinkedList<String>> entry : this.dict.entrySet()) {
                 builder.append(entry.getKey()).append(word_mean_parameter);
                 Iterator<String> it = entry.getValue().iterator();
