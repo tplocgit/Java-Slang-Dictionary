@@ -44,7 +44,7 @@ public class SlangDictionary {
     }
 
     public LinkedList<String> getDefinitionsOf(String slang) {
-        LinkedList<String> def = this.dict.get(slang);
+        LinkedList<String> def = this.dict.get(slang.toUpperCase());
         if (def == null) {
             def = new LinkedList<>();
             def.add(SlangDictionary.UNKNOWN_WORD_MESG);
@@ -117,6 +117,7 @@ public class SlangDictionary {
     }
 
     public void addWord(String word, String mean) {
+        word = word.toUpperCase();
         if (!this.dict.containsKey(word)) {
             LinkedList<String> init_means_list = new LinkedList<>();
             init_means_list.add(mean);
@@ -129,7 +130,7 @@ public class SlangDictionary {
     }
 
     public void putWord(String slang, LinkedList<String> defis) {
-        this.dict.put(slang, defis);
+        this.dict.put(slang.toUpperCase(), defis);
     }
 
     public String randomKey() {
@@ -454,7 +455,7 @@ public class SlangDictionary {
     }
 
     public LinkedList<String> removeWord(String word) {
-        return this.dict.remove(word);
+        return this.dict.remove(word.toUpperCase());
     }
 
     private void loadChangeLog(String path) {
